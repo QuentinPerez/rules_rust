@@ -51,6 +51,8 @@ SUPPORTED_T2_PLATFORM_TRIPLES = [
 
 SUPPORTED_T3_PLATFORM_TRIPLES = [
     "aarch64-unknown-nto-qnx710",
+    "aarch64-apple-visionos-sim",
+    "aarch64-apple-visionos",
 ]
 
 SUPPORTED_PLATFORM_TRIPLES = SUPPORTED_T1_PLATFORM_TRIPLES + SUPPORTED_T2_PLATFORM_TRIPLES + SUPPORTED_T3_PLATFORM_TRIPLES
@@ -97,6 +99,7 @@ _SYSTEM_TO_BUILTIN_SYS_SUFFIX = {
     "freebsd": "freebsd",
     "fuchsia": "fuchsia",
     "ios": "ios",
+    "visionos": "visionos",
     "linux": "linux",
     "nacl": None,
     "netbsd": None,
@@ -119,6 +122,7 @@ _SYSTEM_TO_BINARY_EXT = {
     "freebsd": "",
     "fuchsia": "",
     "ios": "",
+    "visionos": "",
     "linux": "",
     "nixos": "",
     "none": "",
@@ -140,6 +144,7 @@ _SYSTEM_TO_STATICLIB_EXT = {
     "freebsd": ".a",
     "fuchsia": ".a",
     "ios": ".a",
+    "visionos": ".a",
     "linux": ".a",
     "nixos": ".a",
     "none": ".a",
@@ -158,6 +163,7 @@ _SYSTEM_TO_DYLIB_EXT = {
     "freebsd": ".so",
     "fuchsia": ".so",
     "ios": ".dylib",
+    "visionos": ".dylib",
     "linux": ".so",
     "nixos": ".so",
     "none": ".so",
@@ -198,6 +204,7 @@ _SYSTEM_TO_STDLIB_LINKFLAGS = {
     "fuchsia": ["-lzircon", "-lfdio"],
     "illumos": ["-lsocket", "-lposix4", "-lpthread", "-lresolv", "-lnsl", "-lumem"],
     "ios": ["-lSystem", "-lobjc", "-Wl,-framework,Security", "-Wl,-framework,Foundation", "-lresolv"],
+    "visionos": ["-lSystem", "-lobjc", "-Wl,-framework,Security", "-Wl,-framework,Foundation", "-lresolv"],
     # TODO: This ignores musl. Longer term what does Bazel think about musl?
     "linux": ["-ldl", "-lpthread"],
     "nacl": [],
@@ -263,8 +270,8 @@ def abi_to_constraints(abi, *, arch = None, system = None):
         List: A list of labels to constraint values
     """
 
-    # add constraints for iOS + watchOS simulator and device triples
-    if system in ["ios", "watchos"]:
+    # add constraints for iOS + watchOS + visionOS simulator and device triples
+    if system in ["ios", "watchos", "visionos"]:
         if arch == "x86_64" or abi == "sim":
             return ["@build_bazel_apple_support//constraints:simulator"]
         else:
